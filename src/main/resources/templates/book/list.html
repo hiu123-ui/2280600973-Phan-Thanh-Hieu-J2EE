@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Book List</title>
+
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+
+    <style>
+        /* CSS Riêng cho trang List */
+        .search-box {
+            position: relative;
+            /* 1. CHỈNH CHIỀU DÀI Ở ĐÂY */
+            width: 100%;           /* Chiếm hết chiều rộng cho phép */
+            max-width: 600px;      /* Giới hạn độ dài tối đa (Sửa số này nếu muốn dài hơn/ngắn đi) */
+        }
+        
+        .search-box input {
+            border-radius: 50px;
+            /* 2. CHỈNH ĐỘ DÀY (CHIỀU CAO) Ở ĐÂY */
+            padding: 12px 50px 12px 25px; /* Tăng số 12px lên nếu muốn thanh tìm kiếm cao hơn */
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Thêm bóng nhẹ cho đẹp */
+            font-size: 1rem;       /* Cỡ chữ to hơn chút cho dễ đọc */
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Hiệu ứng khi bấm vào ô tìm kiếm */
+        .search-box input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-box button {
+            position: absolute;
+            right: 8px;            /* Căn chỉnh lại vị trí nút */
+            top: 50%;              /* Căn giữa theo chiều dọc */
+            transform: translateY(-50%); /* Kỹ thuật căn giữa chính xác */
+            border-radius: 50%;
+            width: 40px;           /* Nút to hơn chút */
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(118, 75, 162, 0.3);
+        }
+        
+        .search-box button:hover {
+            transform: translateY(-50%) scale(1.1); /* Giữ căn giữa khi hover */
+        }
+
+        /* ... Các CSS khác của Table giữ nguyên ... */
+        .table-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .table-custom thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .table-custom th {
+            font-weight: 500;
+            border: none;
+            padding: 15px;
+            vertical-align: middle;
+        }
+        .table-custom td {
+            vertical-align: middle;
+            padding: 12px 15px;
+        }
+        .book-thumbnail {
+            width: 99px;          /* Giảm xíu cho cân đối với table */
+            height: 99px;
+            object-fit: cover;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+        }
+        .btn-action {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 2px;
+            transition: all 0.2s;
+        }
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <th:block th:replace="~{layout::header}"></th:block>
+
+    <div class="container mt-5 mb-5">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-dark mb-3 mb-md-0">
+                <i class="fas fa-book-open me-2 text-primary"></i>My Book List
+            </h2>
+
+            <form class="search-box d-flex w-100" th:action="@{/books/search}" method="get">
+                <input class="form-control" type="search" name="keyword" placeholder="Search by title, author...">
+                <button type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="card table-card">
+            <div class="table-responsive">
+                <table class="table table-custom table-hover mb-0 text-center">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th> <th>Title</th>
+                            <th>Author</th>
+                            <th>Price</th>
+                            <th>Category</th>
+
+                            <th sec:authorize="hasAuthority('ADMIN')">Action</th>
+                            <th sec:authorize="hasAuthority('USER')">Cart</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr th:each="book : ${books}">
+                            <td class="fw-bold text-secondary" th:text="${book.id}"></td>
+                            
+                            <td>
+                                <img src="https://cdn-icons-png.flaticon.com/512/224/224641.png" 
+                                    alt="Book Image" 
+                                    class="book-thumbnail">
+                            </td>
+
+                            <td class="fw-bold text-start" th:text="${book.title}"></td> 
+                            <td th:text="${book.author}"></td>
+                            <td class="text-primary fw-bold" th:text="${book.price} + ' $'"></td>
+                            <td>
+                                <span class="badge bg-light text-dark border" th:text="${book.category.name}"></span>
+                            </td>
+
+                            <td sec:authorize="hasAuthority('ADMIN')">
+                                <div class="d-flex justify-content-center">
+                                    <a class="btn btn-warning btn-sm btn-action text-white"
+                                       th:href="@{/books/edit/{id}(id=${book.id})}" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <a class="btn btn-danger btn-sm btn-action"
+                                       th:href="@{/books/delete/{id}(id=${book.id})}"
+                                       onclick="return confirm('Delete this book?')" title="Delete">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+
+                                    <form th:action="@{/books/add-to-cart}" method="post" class="d-inline">
+                                        <input type="hidden" name="id" th:value="${book.id}">
+                                        <input type="hidden" name="name" th:value="${book.title}">
+                                        <input type="hidden" name="price" th:value="${book.price}">
+                                        <button class="btn btn-success btn-sm btn-action" type="submit" title="Add to Cart">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+
+                            <td sec:authorize="hasAuthority('USER')">
+                                <form th:action="@{/books/add-to-cart}" method="post">
+                                    <input type="hidden" name="id" th:value="${book.id}">
+                                    <input type="hidden" name="name" th:value="${book.title}">
+                                    <input type="hidden" name="price" th:value="${book.price}">
+                                    
+                                    <button class="btn btn-success btn-sm rounded-pill px-3" type="submit">
+                                        <i class="fas fa-cart-plus me-1"></i> Buy
+                                    </button>
+                                </form>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div th:if="${books.isEmpty()}" class="text-center p-4">
+                <p class="text-muted">No books found matching your search.</p>
+            </div>
+        </div>
+        
+    </div>
+
+    <th:block th:replace="~{layout::footer}"></th:block>
+
+</body>
+</html>

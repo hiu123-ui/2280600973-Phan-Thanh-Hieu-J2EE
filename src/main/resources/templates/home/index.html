@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ | Quản Lý Sách</title>
+    
+    <th:block th:replace="~{layout::link-css}"></th:block>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <th:block th:replace="~{layout::custom-css}"></th:block>
+
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        .icon-box {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #764ba2;
+        }
+        .btn-custom {
+            background-color: #764ba2;
+            color: white;
+            border-radius: 25px;
+            padding: 8px 20px;
+        }
+        .btn-custom:hover {
+            background-color: #5a3780;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="bg-light"> <th:block th:replace="~{layout::header}"></th:block>
+
+    <div class="container mt-4">
+        
+        <div class="hero-section text-center">
+            <h1 class="display-5 fw-bold">Hệ Thống Quản Lý Sách</h1>
+            <hr class="my-4" style="width: 50%; margin: auto; border-color: rgba(255,255,255,0.3);">
+            <p>Chào mừng bạn đến với trang chủ của hệ thống quản lý sách</p>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card feature-card text-center p-4">
+                    <div class="card-body">
+                        <div class="icon-box"><i class="fas fa-book"></i></div>
+                        <h5 class="card-title fw-bold">Kho Sách</h5>
+                        <p class="card-text text-muted">Xem, tìm kiếm và quản lý toàn bộ đầu sách trong hệ thống.</p>
+                        <a href="/books" class="btn btn-custom">Xem Danh Sách</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card feature-card text-center p-4">
+                    <div class="card-body">
+                        <div class="icon-box"><i class="fas fa-plus-circle"></i></div>
+                        <h5 class="card-title fw-bold">Thêm Sách Mới</h5>
+                        <p class="card-text text-muted">Nhập liệu sách mới vào cơ sở dữ liệu MySQL.</p>
+                        <a href="/books/new" class="btn btn-custom">Thêm Mới</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card feature-card text-center p-4">
+                    <div class="card-body">
+                        <div class="icon-box"><i class="fas fa-chart-pie"></i></div>
+                        <h5 class="card-title fw-bold">Báo Cáo</h5>
+                        <p class="card-text text-muted">Xem thống kê số lượng sách và tình trạng kho.</p>
+                        <a href="#" class="btn btn-custom">Xem Báo Cáo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <th:block th:replace="~{layout::footer}"></th:block>
+</body>
+
+</html>
